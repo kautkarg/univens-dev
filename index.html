@@ -45,10 +45,8 @@ a{color:inherit;text-decoration:none}
 .section-block .phase-b.reveal{opacity:1!important;transform:translateY(0)!important}
 
 /* ── Base typography (no transitions) ── */
-.section-block .inner{max-width:clamp(320px,38vw,540px);width:100%;position:relative}
+.section-block .inner{max-width:min(92vw,800px);width:100%;position:relative}
 
-/* Level 05 — Invitation */
-.section-block .inner .level-05{font-size:clamp(12px,.8vw,16px);font-weight:500;color:var(--text-primary);letter-spacing:0;margin-top:clamp(16px,1.5vw,24px)}
 #spacer{pointer-events:none}
 
 /* ── Nav ── */
@@ -87,38 +85,26 @@ nav .cta:hover{opacity:1}
 @media(max-width:768px){.prg{display:none}}
 
 /* ── Viewport: Hero ── */
-.vp-hero .inner{z-index:2;position:relative;max-width:none}
+.vp-hero .inner{z-index:2;position:relative}
 
 .hero-glow{position:absolute;top:50%;left:50%;width:80vw;height:60vh;transform:translate(-50%,-50%);background:radial-gradient(ellipse at 50% 50%,rgba(17,17,17,.02),transparent 70%);pointer-events:none;z-index:0;opacity:0;transition:opacity 1.5s ease;will-change:transform}
 .section-block.active .hero-glow{opacity:1}
 .scroll-hint{position:absolute;bottom:clamp(24px,4vh,48px);left:clamp(48px,8vw,120px);font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text-tertiary);letter-spacing:.12em;opacity:0;animation:hintIn 1s ease 4s forwards;z-index:2;font-weight:500;text-transform:uppercase}
 @keyframes hintIn{to{opacity:1}}
 
-/* ── Split layouts ── */
-.split-layout{display:flex;gap:clamp(16px,2vw,32px);width:100%;align-items:flex-start}
-.split-left,.split-right{flex:1;min-width:0}
-.split-70-30 .split-left{flex:0 0 70%}
-.split-70-30 .split-right{flex:0 0 30%}
-.split-50-50 .split-left,.split-50-50 .split-right{flex:0 0 50%}
-.split-35-65 .split-left{flex:0 0 35%}
-.split-35-65 .split-right{flex:0 0 65%}
-.split-40-60 .split-left{flex:0 0 40%}
-.split-40-60 .split-right{flex:0 0 60%}
-.split-60-40 .split-left{flex:0 0 60%}
-.split-60-40 .split-right{flex:0 0 40%}
-.split-30-70 .split-left{flex:0 0 30%}
-.split-30-70 .split-right{flex:0 0 70%}
-.split-45-55 .split-left{flex:0 0 45%}
-.split-45-55 .split-right{flex:0 0 55%}
-@media(max-width:768px){.split-layout{flex-direction:column}.split-layout>.split-left,.split-layout>.split-right{flex:0 0 100%!important}}
+/* ── Split layouts (removed in v1.3 — narrative flow replaces split) ── */
 
-/* ── Conversation narrations ── */
-.narration{display:flex;flex-direction:column;gap:clamp(6px,.6vw,10px);align-items:flex-start;max-width:100%}
-.narration-msg{display:flex;flex-direction:column;gap:2px;max-width:100%;align-items:flex-start}
-.narration-sender{display:flex;align-items:center;gap:6px;margin-bottom:2px}
-.narration-avatar{width:18px;height:18px;border-radius:50%;background:var(--text-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;font-family:'Inter Tight',sans-serif;flex-shrink:0}
-.narration-name{font-size:9px;font-weight:500;color:var(--text-tertiary);letter-spacing:.08em;text-transform:uppercase}
-.narration-text{font-size:clamp(13px,.85vw,17px);font-weight:500;color:var(--text-primary);letter-spacing:-.01em;line-height:1.35;padding:clamp(8px,.5vw,10px) clamp(10px,.6vw,12px);background:rgba(17,17,17,.03);border-radius:4px 4px 4px 2px;width:fit-content;max-width:100%}
+/* ── Narrative flow (Topic → Sentence → Visual → Support → Action) ── */
+.nf-flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;width:100%;max-width:clamp(480px,52vw,720px)}
+.nf-flow.nf-centered{align-items:center;text-align:center}
+.nf-flow.nf-centered .nf-support{text-align:center}
+.nf-flow.nf-centered .nf-action{justify-content:center}
+.nf-topic{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;color:var(--text-tertiary);letter-spacing:.12em;text-transform:uppercase}
+.nf-arrow{font-size:11px;color:var(--text-disabled);opacity:.35;margin:clamp(3px,.2vw,6px) 0;flex-shrink:0}
+.nf-sentence{font-size:clamp(16px,1.2vw,24px);font-weight:500;color:var(--text-primary);line-height:1.2;letter-spacing:-.01em}
+.nf-visual{width:100%;margin:clamp(4px,.3vw,8px) 0}
+.nf-support{font-size:clamp(12px,.7vw,15px);color:var(--text-secondary);font-weight:400;line-height:1.5;max-width:28em}
+.nf-action{display:flex;gap:12px;align-items:center;margin-top:clamp(8px,.6vw,12px);flex-wrap:wrap}
 
 /* ── v1.2 Components ── */
 .principles-stack{display:flex;flex-direction:column;gap:clamp(8px,.8vw,14px);margin-top:clamp(8px,.8vw,14px)}
@@ -151,18 +137,13 @@ nav .cta:hover{opacity:1}
 .case-info .case-title{font-size:clamp(14px,1vw,18px);font-weight:600;color:var(--text-primary);margin-bottom:6px;letter-spacing:-.01em}
 .case-info .case-desc{font-size:clamp(11px,0.7vw,14px);color:var(--text-secondary);line-height:1.5}
 
-.experience-stack{display:flex;flex-direction:column;gap:clamp(12px,1vw,20px);margin-top:clamp(12px,1.2vw,20px)}
-.exp-item{display:flex;justify-content:space-between;align-items:center;padding:clamp(12px,1vw,20px) 0;border-bottom:1px solid var(--border)}
-.exp-label{font-size:clamp(11px,.7vw,14px);color:var(--text-secondary);font-weight:400}
-.exp-val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-primary);font-weight:500}
-
 .workspace-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:clamp(12px,1.2vw,20px);margin-top:clamp(20px,2vw,32px)}
 .ws-card{aspect-ratio:1;background:var(--border);border-radius:4px;overflow:hidden;position:relative;transition:all .4s cubic-bezier(.22,1,.36,1)}
 .ws-card:hover{border-color:var(--text-primary);transform:scale(1.02)}
 .ws-card img{width:100%;height:100%;object-fit:cover;opacity:.8;transition:opacity .4s}
 .ws-card:hover img{opacity:1}
 
-.principles-note,.capability-footnote,.process-footnote,.conv-footnote{margin-top:clamp(16px,1.5vw,24px);font-size:clamp(9px,.5vw,11px);color:var(--text-muted);font-weight:400;line-height:1.5}
+
 
 /* ── Status column ── */
 .status-col{padding-top:clamp(8px,.6vw,12px)}
@@ -171,9 +152,6 @@ nav .cta:hover{opacity:1}
 .status-item{position:absolute;top:0;left:0;font-size:clamp(11px,.7vw,14px);font-weight:500;color:var(--text-primary);opacity:0;transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1);transform:translateY(8px)}
 .status-item.active{opacity:1;transform:translateY(0)}
 .status-arrow{margin-top:clamp(6px,.4vw,8px);font-size:9px;color:var(--text-tertiary);opacity:.4}
-.status-hint{margin-top:clamp(20px,2vw,28px);font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--text-tertiary);font-weight:500;letter-spacing:.12em;text-transform:uppercase;opacity:.5;cursor:pointer;transition:opacity .3s}
-.status-hint:hover{opacity:1}
-
 /* ── Statements ── */
 /* Removed - not used in v1.2 */
 
@@ -191,18 +169,7 @@ nav .cta:hover{opacity:1}
 .mlogo{font-size:clamp(10px,.6vw,13px);font-weight:500;color:var(--text-secondary);padding:clamp(4px,.3vw,6px) clamp(6px,.4vw,8px);font-family:'IBM Plex Mono',monospace;opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease;letter-spacing:-.01em}
 .mlogo.reveal{opacity:1;transform:translateY(0)}
 .mlogo:hover{color:var(--text-primary)}
-.mlogos-footnote{margin-top:clamp(12px,1.2vw,16px);font-size:clamp(9px,.5vw,11px);color:var(--text-muted);font-weight:400}
 
-/* ── Timeline ── */
-.timeline{position:relative;padding-left:clamp(16px,1.5vw,24px);margin-top:clamp(8px,.8vw,14px)}
-.timeline::before{content:'';position:absolute;left:0;top:clamp(4px,.4vw,6px);bottom:clamp(4px,.4vw,6px);width:1px;background:var(--border)}
-.timeline-step{position:relative;padding:clamp(10px,.8vw,16px) 0 clamp(10px,.8vw,16px) clamp(20px,2vw,32px);opacity:.3;transition:all .6s cubic-bezier(.22,1,.36,1)}
-.timeline-step::before{content:'';position:absolute;left:clamp(-22px,-2.4vw,-34px);top:clamp(14px,1.2vw,20px);width:5px;height:5px;border-radius:50%;background:var(--text-tertiary);transition:all .5s cubic-bezier(.22,1,.36,1)}
-.timeline-step.active{opacity:1}
-.timeline-step.active::before{background:var(--text-primary);width:7px;height:7px;top:clamp(13px,1.1vw,19px);left:clamp(-23px,-2.5vw,-35px)}
-.timeline-step .ts-label{font-size:clamp(13px,.8vw,16px);font-weight:500;color:var(--text-primary);letter-spacing:-.005em;line-height:1.2}
-.timeline-step .ts-desc{font-size:clamp(10px,.6vw,13px);color:var(--text-secondary);font-weight:400;margin-top:clamp(2px,.2vw,4px)}
-.timeline-footnote{margin-top:clamp(12px,1.2vw,16px);font-size:clamp(10px,.6vw,12px);color:var(--text-secondary);font-weight:400;line-height:1.5}
 
 /* ── Conversation snippets ── */
 .conv-stack{display:flex;flex-direction:column;gap:clamp(6px,.6vw,10px);margin-top:clamp(10px,1vw,16px)}
@@ -213,12 +180,8 @@ nav .cta:hover{opacity:1}
 .conv-snip.cs-blur::after{content:'';position:absolute;inset:0;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 
 /* ── Workspace ── */
-.ws-footnote{margin-top:clamp(12px,1.2vw,16px);font-size:clamp(9px,.5vw,11px);color:var(--text-muted);font-weight:400;text-align:center}
-
 /* ── Centered invitation ── */
 .vp-invitation{align-items:center;justify-content:center;text-align:center}
-.invite-large{font-size:clamp(16px,1.2vw,24px);font-weight:500;color:var(--text-primary);line-height:1.2;letter-spacing:-.01em;margin-bottom:clamp(12px,1vw,16px)}
-.invite-support{font-size:clamp(11px,.7vw,14px);color:var(--text-secondary);font-weight:400;line-height:1.5;max-width:24em;margin:0 auto}
 .input-wrap.large{max-width:32em}
 .input-wrap.large input{font-size:clamp(14px,1vw,18px);height:48px}
 
@@ -269,7 +232,7 @@ footer .fn{font-size:10px;color:var(--text-muted);margin-top:clamp(24px,3vw,36px
   <button class="menu-close" id="menu-close">✕</button>
   <div class="menu-inner">
     <div class="menu-items">
-      <a class="menu-item" data-section="0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;vertical-align:middle"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Hero</a>
+      <a class="menu-item" data-section="0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;vertical-align:middle"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Introduction</a>
       <a class="menu-item" data-section="1">Expectations</a>
       <a class="menu-item" data-section="2">Credibility</a>
       <a class="menu-item" data-section="3">Capabilities</a>
@@ -291,31 +254,14 @@ footer .fn{font-size:10px;color:var(--text-muted);margin-top:clamp(24px,3vw,36px
 <!-- ── 01. Hero ── -->
 <div class="section-block vp-hero">
 <div class="hero-glow" id="hero-glow"></div>
-<div class="inner" style="max-width:none;position:relative;z-index:1">
-<div class="split-layout split-70-30">
-<div class="split-left">
-<div class="narration">
-<div class="narration-msg phase-a">
-<span class="narration-sender">
-<span class="narration-avatar">U</span>
-<span class="narration-name">Univens</span>
-</span>
-<span class="narration-text">Good to have you here.</span>
-</div>
-<div class="narration-msg phase-a">
-<span class="narration-text">Businesses are built one decision at a time.</span>
-</div>
-<div class="narration-msg phase-b">
-<span class="narration-text">We help growing businesses resolve complexity through a single, accountable execution system.</span>
-</div>
-</div>
-<div class="level-05 phase-b" style="margin-top:clamp(20px,2vw,28px);display:flex;gap:12px;align-items:center">
-<a href="#" class="btn">Start the Conversation →</a>
-<a href="#" class="btn-ot">See How We Think</a>
-</div>
-</div>
-<div class="split-right">
-<div class="status-col phase-a">
+<div class="inner" style="position:relative;z-index:1">
+<div class="nf-flow">
+<div class="nf-topic phase-a">Introduction</div>
+<div class="nf-arrow phase-a">↓</div>
+<div class="nf-sentence phase-a">Good to have you here.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-visual phase-b">
+<div class="status-col">
 <div class="status-label">Currently building</div>
 <div class="status-items" id="status-items">
 <div class="status-item active" data-status="0">Better systems</div>
@@ -325,6 +271,13 @@ footer .fn{font-size:10px;color:var(--text-muted);margin-top:clamp(24px,3vw,36px
 <div class="status-arrow">↓</div>
 </div>
 </div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-support phase-b">Businesses are built one decision at a time. We help growing businesses resolve complexity through a single, accountable execution system.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-action phase-b">
+<a href="#" class="btn">Start the Conversation →</a>
+<a href="#" class="btn-ot">See How We Think</a>
+</div>
 </div>
 </div>
 <div class="scroll-hint phase-b">↓ Let's define how we work.</div>
@@ -332,26 +285,19 @@ footer .fn{font-size:10px;color:var(--text-muted);margin-top:clamp(24px,3vw,36px
 
 <!-- ── 02. Expectations ── -->
 <div class="section-block vp-expectations">
-<div class="inner" style="max-width:none">
-<div class="split-layout split-30-70">
-<div class="split-left">
-<div class="narration">
-<div class="narration-msg phase-a">
-<span class="narration-sender">
-<span class="narration-avatar">U</span>
-<span class="narration-name">Univens</span>
-</span>
-<span class="narration-text">Here's what you can expect.</span>
-</div>
-</div>
-</div>
-<div class="split-right">
-<div class="principles-stack phase-a">
+<div class="inner">
+<div class="nf-flow">
+<div class="nf-topic phase-a">Expectations</div>
+<div class="nf-arrow phase-a">↓</div>
+<div class="nf-sentence phase-a">Here's what you can expect.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-visual phase-b">
+<div class="principles-stack">
 <div class="principle-item"><span class="principle-num">01</span> Business before technology.</div>
 <div class="principle-item"><span class="principle-num">02</span> Execution before expansion.</div>
 <div class="principle-item"><span class="principle-num">03</span> Progress before perfection.</div>
 </div>
-<div class="philosophy-grid phase-b">
+<div class="philosophy-grid">
 <div class="philosophy-card">
 <span class="phi-label">Thinking</span>
 <span class="phi-text">Strategy is a hypothesis. Execution is the test.</span>
@@ -366,79 +312,73 @@ footer .fn{font-size:10px;color:var(--text-muted);margin-top:clamp(24px,3vw,36px
 </div>
 </div>
 </div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-support phase-b">Everything else builds on these.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-action phase-b">
+<a href="#" class="btn-ot">Learn More →</a>
 </div>
-<p class="principles-note phase-b">Everything else builds on these.</p>
+</div>
 </div>
 </div>
 
 <!-- ── 03. Credibility ── -->
 <div class="section-block vp-credibility">
-<div class="inner" style="max-width:none">
-<div class="split-layout split-30-70">
-<div class="split-left">
-<div class="narration">
-<div class="narration-msg phase-a">
-<span class="narration-sender">
-<span class="narration-avatar">U</span>
-<span class="narration-name">Univens</span>
-</span>
-<span class="narration-text">Different businesses. Different challenges.</span>
-</div>
-</div>
-</div>
-<div class="split-right">
-<div class="mlogos phase-a" id="mlogos"></div>
-<div class="metric-wall phase-b">
+<div class="inner">
+<div class="nf-flow">
+<div class="nf-topic phase-a">Credibility</div>
+<div class="nf-arrow phase-a">↓</div>
+<div class="nf-sentence phase-a">Different businesses. Different challenges.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-visual phase-b">
+<div class="mlogos" id="mlogos"></div>
+<div class="metric-wall" style="margin-top:clamp(16px,1.5vw,24px)">
 <div class="metric-item"><span class="metric-val">12+</span><span class="metric-lbl">Industries</span></div>
 <div class="metric-item"><span class="metric-val">40+</span><span class="metric-lbl">Projects</span></div>
 <div class="metric-item"><span class="metric-val">100%</span><span class="metric-lbl">Accountable</span></div>
 </div>
 </div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-support phase-b">Every engagement required accountability.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-action phase-b">
+<a href="#" class="btn-ot">See Our Work →</a>
 </div>
-<p class="mlogos-footnote phase-b">Every engagement required accountability.</p>
+</div>
 </div>
 </div>
 
 <!-- ── 04. Capabilities ── -->
 <div class="section-block vp-capabilities">
-<div class="inner" style="max-width:none">
-<div class="split-layout split-30-70">
-<div class="split-left">
-<div class="narration">
-<div class="narration-msg phase-a">
-<span class="narration-sender">
-<span class="narration-avatar">U</span>
-<span class="narration-name">Univens</span>
-</span>
-<span class="narration-text">Challenges rarely exist in isolation.</span>
+<div class="inner">
+<div class="nf-flow">
+<div class="nf-topic phase-a">Capabilities</div>
+<div class="nf-arrow phase-a">↓</div>
+<div class="nf-sentence phase-a">Challenges rarely exist in isolation.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-visual phase-b">
+<div class="capability-map" id="cap-map"></div>
+</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-support phase-b">Map built around your objective.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-action phase-b">
+<a href="#" class="btn-ot">Explore Services →</a>
 </div>
 </div>
-</div>
-<div class="split-right">
-<div class="capability-map phase-a" id="cap-map"></div>
-</div>
-</div>
-<p class="capability-footnote phase-b">Map built around your objective.</p>
 </div>
 </div>
 
 <!-- ── 05. Selected Work ── -->
 <div class="section-block vp-work">
-<div class="inner" style="max-width:none">
-<div class="split-layout split-30-70">
-<div class="split-left">
-<div class="narration">
-<div class="narration-msg phase-a">
-<span class="narration-sender">
-<span class="narration-avatar">U</span>
-<span class="narration-name">Univens</span>
-</span>
-<span class="narration-text">Execution is where strategy meets reality.</span>
-</div>
-</div>
-</div>
-<div class="split-right">
-<div class="case-grid phase-a">
+<div class="inner">
+<div class="nf-flow">
+<div class="nf-topic phase-a">Selected Work</div>
+<div class="nf-arrow phase-a">↓</div>
+<div class="nf-sentence phase-a">Execution is where strategy meets reality.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-visual phase-b">
+<div class="case-grid">
 <div class="case-card">
 <div class="case-img" style="background-image:url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=400&q=80')"></div>
 <div class="case-info">
@@ -455,96 +395,104 @@ footer .fn{font-size:10px;color:var(--text-muted);margin-top:clamp(24px,3vw,36px
 </div>
 </div>
 </div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-support phase-b">Results come from a willingness to simplify.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-action phase-b">
+<a href="#" class="btn-ot">View All Work →</a>
 </div>
-<p class="conv-footnote phase-b">Results come from a willingness to simplify.</p>
+</div>
 </div>
 </div>
 
 <!-- ── 06. How We Work ── -->
 <div class="section-block vp-process">
-<div class="inner" style="max-width:none">
-<div class="split-layout split-30-70">
-<div class="split-left">
-<div class="narration">
-<div class="narration-msg phase-a">
-<span class="narration-sender">
-<span class="narration-avatar">U</span>
-<span class="narration-name">Univens</span>
-</span>
-<span class="narration-text">Clear journeys. Shared accountability.</span>
+<div class="inner">
+<div class="nf-flow">
+<div class="nf-topic phase-a">How We Work</div>
+<div class="nf-arrow phase-a">↓</div>
+<div class="nf-sentence phase-a">Clear journeys. Shared accountability.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-visual phase-b">
+<div class="process-map" id="proc-map"></div>
+</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-support phase-b">Simple process. Thoughtful execution.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-action phase-b">
+<a href="#" class="btn-ot">Start Your Project →</a>
 </div>
 </div>
-</div>
-<div class="split-right">
-<div class="process-map phase-a" id="proc-map"></div>
-</div>
-</div>
-<p class="process-footnote phase-b">Simple process. Thoughtful execution.</p>
 </div>
 </div>
 
 <!-- ── 07. Client Experience ── -->
 <div class="section-block vp-experience">
-<div class="inner" style="max-width:none">
-<div class="split-layout split-30-70">
-<div class="split-left">
-<div class="narration">
-<div class="narration-msg phase-a">
-<span class="narration-sender">
-<span class="narration-avatar">U</span>
-<span class="narration-name">Univens</span>
-</span>
-<span class="narration-text">Proof lives in conversations.</span>
+<div class="inner">
+<div class="nf-flow">
+<div class="nf-topic phase-a">Client Experience</div>
+<div class="nf-arrow phase-a">↓</div>
+<div class="nf-sentence phase-a">Proof lives in conversations.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-visual phase-b">
+<div class="conv-stack" id="conv-stack"></div>
+</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-support phase-b">Relationships continue long after delivery.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-action phase-b">
+<a href="#" class="btn-ot">Let's Talk →</a>
 </div>
 </div>
-</div>
-<div class="split-right">
-<div class="conv-stack phase-b" id="conv-stack"></div>
-</div>
-</div>
-<p class="conv-footnote phase-b">Relationships continue long after delivery.</p>
 </div>
 </div>
 
 <!-- ── 08. About ── -->
 <div class="section-block vp-about">
-<div class="inner" style="max-width:none">
-<div class="split-layout split-30-70">
-<div class="split-left">
-<div class="narration">
-<div class="narration-msg phase-a">
-<span class="narration-sender">
-<span class="narration-avatar">U</span>
-<span class="narration-name">Univens</span>
-</span>
-<span class="narration-text">Built on a philosophy of building.</span>
-</div>
-</div>
-</div>
-<div class="split-right">
-<div class="workspace-grid phase-a">
+<div class="inner">
+<div class="nf-flow">
+<div class="nf-topic phase-a">About</div>
+<div class="nf-arrow phase-a">↓</div>
+<div class="nf-sentence phase-a">Built on a philosophy of building.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-visual phase-b">
+<div class="workspace-grid">
 <div class="ws-card"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=300&q=80" alt="Planning"></div>
 <div class="ws-card"><img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=300&q=80" alt="Design"></div>
 <div class="ws-card"><img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=300&q=80" alt="Code"></div>
 <div class="ws-card"><img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=300&q=80" alt="Team"></div>
 </div>
 </div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-support phase-b">Where the real work happens.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-action phase-b">
+<a href="#" class="btn-ot">Meet Us →</a>
 </div>
-<p class="ws-footnote phase-b">Where the real work happens.</p>
+</div>
 </div>
 </div>
 
 <!-- ── 09. Start ── -->
 <div class="section-block vp-invitation">
-<div class="inner" style="max-width:28em">
-<p class="invite-large phase-a">Enough about us. Let's talk about your business.</p>
-<p class="invite-support phase-b">The conversation starts the same way.</p>
-<div class="input-wrap large phase-b">
+<div class="inner" style="max-width:32em">
+<div class="nf-flow nf-centered">
+<div class="nf-topic phase-a">Start</div>
+<div class="nf-arrow phase-a">↓</div>
+<div class="nf-sentence phase-a">Enough about us. Let's talk about your business.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-visual phase-b">
+<div class="input-wrap large" style="margin:0 auto">
 <input type="text" id="main-input" placeholder="We're planning our next stage of growth." autocomplete="off">
 </div>
-<div class="level-05 phase-b" style="margin-top:clamp(20px,2.5vw,32px);display:flex;gap:clamp(10px,.8vw,16px);justify-content:center;align-items:center;flex-direction:column">
+</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-support phase-b">The conversation starts the same way.</div>
+<div class="nf-arrow phase-b">↓</div>
+<div class="nf-action phase-b" style="flex-direction:column">
 <a href="#" class="btn">Start the Conversation →</a>
 <a href="#" class="btn-ot">Explore Our Work</a>
+</div>
 </div>
 </div>
 </div>
@@ -619,7 +567,7 @@ document.querySelectorAll('a,.btn,.btn-ot,.cta,button,.case-card,.ws-card,.philo
   el.addEventListener('mouseleave',()=>{hoverEl=null})
 });
 
-const ST=['hero','expectations','credibility','capabilities','work','process','experience','about','start'];
+const ST=['hero','expectations','credibility','capabilities','work','process','experience','about','invitation'];
 
 function getLabel(el){
   if(!el)return'';
@@ -914,15 +862,15 @@ function updateSlides(){
   const ctxMem=document.getElementById('ctx-memory');
   if(ctxMem){
     const mems=[
-      "Welcome. This is Univens.",
-      "Expect what we build.",
-      "Different businesses. Different challenges.",
-      "Challenges rarely exist in isolation.",
-      "Execution meets reality.",
-      "Clear journeys. Shared accountability.",
-      "Proof lives in conversations.",
-      "Built on a philosophy of building.",
-      "The conversation starts here."
+      "Introduction — Good to have you here.",
+      "Expectations — Here's what you can expect.",
+      "Credibility — Different businesses. Different challenges.",
+      "Capabilities — Challenges rarely exist in isolation.",
+      "Selected Work — Execution is where strategy meets reality.",
+      "How We Work — Clear journeys. Shared accountability.",
+      "Client Experience — Proof lives in conversations.",
+      "About — Built on a philosophy of building.",
+      "Start — Enough about us. Let's talk."
     ];
     const ctxI=Math.max(0,Math.min(mems.length-1,Math.round(rawIndex)-1));
     const curSecIdx=Math.round(rawIndex);

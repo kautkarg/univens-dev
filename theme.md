@@ -44,6 +44,8 @@ The site went through a fundamental restructuring:
 | **CSS phase system** | Old system used `.level-01`–`.level-05` CSS classes with opacity transitions controlled by `data-phase` attributes. Replaced with JS-driven `.reveal` class for reliable visibility control. |
 | **Ecosystem/Network visualizations** | Custom canvas-based visualizations (eco-viz, net-viz) were removed in v1.2 in favor of simpler grid-based UI components. |
 | **Canvas blobs** | Background canvas with warm gradient blobs was removed per Chapter 18 compliance (no decorative elements). |
+| **30-70 split layout** | Split layouts (narration left, UI right) replaced by unified vertical narrative flow (Topic → Sentence → Visual → Support → Action) in v1.3. |
+| **Chat-style narration** | Avatar + bubble narration system replaced by cleaner topic + sentence flow structure. The "chat" metaphor gave way to a more direct narrative sequence. |
 
 ### Key decisions & rationale
 | Decision | Rationale |
@@ -77,9 +79,13 @@ This is the core architectural decision and must NOT be changed:
 │  ┌───────────────────────┐  │
 │  │  .section-block × 9   │  │  ← Absolutely positioned, stacked, opacity-controlled
 │  │  ┌─────────────────┐  │  │
-│  │  │  .split-layout  │  │  │  ← 30-70 split: narration left, UI right
-│  │  │  .split-left    │  │  │  ← Chat-style narration (avatar + bubble)
-│  │  │  .split-right   │  │  │  ← Interactive UI components
+│  │  │  .nf-flow       │  │  │  ← Vertical narrative: Topic → Sentence → Visual → Support → Action
+│  │  │  .nf-topic      │  │  │  ← Section label (mono, uppercase)
+│  │  │  .nf-arrow      │  │  │  ← ↓ connector between each step
+│  │  │  .nf-sentence   │  │  │  ← Main message
+│  │  │  .nf-visual     │  │  │  ← Primary UI component
+│  │  │  .nf-support    │  │  │  ← Explainer text
+│  │  │  .nf-action     │  │  │  ← CTA buttons
 │  │  └─────────────────┘  │  │
 │  └───────────────────────┘  │
 ├─────────────────────────────┤
@@ -213,17 +219,17 @@ font-family: 'IBM Plex Mono', monospace (weights 400, 500)
 
 ### 3.4 Layout variants per section
 
-| Slide | Split | Narration | Right UI |
-|-------|-------|-----------|----------|
-| 00 (Hero) | `split-70-30` | 3 messages + CTAs | Status column |
-| 01 (Expectations) | `split-30-70` | 1 message | Principles + Philosophy cards |
-| 02 (Credibility) | `split-30-70` | 1 message | Logo wall + Metric wall |
-| 03 (Capabilities) | `split-30-70` | 1 message | Capability map |
-| 04 (Work) | `split-30-70` | 1 message | Case study grid |
-| 05 (Process) | `split-30-70` | 1 message | Process map |
-| 06 (Experience) | `split-30-70` | 1 message | Conversation snippets |
-| 07 (About) | `split-30-70` | 1 message | Workspace grid |
-| 08 (Start) | Centered | Full-width invitation | Input + CTAs |
+| Slide | Layout | Topic | Sentence | Visual | Support | Action |
+|-------|--------|-------|----------|--------|---------|--------|
+| 00 (Hero) | Left-aligned | Introduction | Good to have you here. | Status column | Value prop | CTA + link |
+| 01 (Expectations) | Left-aligned | Expectations | Here's what you can expect. | Principles + Philosophy | Note | Link |
+| 02 (Credibility) | Left-aligned | Credibility | Different businesses. Different challenges. | Logos + Metrics | Footnote | Link |
+| 03 (Capabilities) | Left-aligned | Capabilities | Challenges rarely exist in isolation. | Capability map | Objective note | Link |
+| 04 (Work) | Left-aligned | Selected Work | Execution is where strategy meets reality. | Case grid | Simplification note | Link |
+| 05 (Process) | Left-aligned | How We Work | Clear journeys. Shared accountability. | Process map | Execution note | Link |
+| 06 (Experience) | Left-aligned | Client Experience | Proof lives in conversations. | Conversation stack | Relationship note | Link |
+| 07 (About) | Left-aligned | About | Built on a philosophy of building. | Workspace grid | Philosophy note | Link |
+| 08 (Start) | Centered | Start | Enough about us. Let's talk about your business. | Input field | Support line | CTA + link |
 
 ### 3.5 Buttons
 
@@ -259,38 +265,50 @@ font-family: 'IBM Plex Mono', monospace (weights 400, 500)
 
 ### 4.2 Content sections (9 viewports)
 
-| # | Section | Heading (narration) | UI Components |
-|---|---------|---------------------|---------------|
-| 0 | Hero | "Good to have you here." + "Businesses are built one decision at a time." + value prop | Status cycling + CTAs |
-| 1 | Expectations | "Here's what you can expect." | 3 numbered principles + 3 philosophy cards |
-| 2 | Credibility | "Different businesses. Different challenges." | Logo wall (8 brands) + Metric wall |
-| 3 | Capabilities | "Challenges rarely exist in isolation." | Capability map (7 steps) |
-| 4 | Selected Work | "Execution is where strategy meets reality." | Case grid (Infrastructure Scale, Brand Evolution) |
-| 5 | How We Work | "Clear journeys. Shared accountability." | Process map (4 steps) |
-| 6 | Client Experience | "Proof lives in conversations." | Conversation stack (Slack/WhatsApp/Meeting snippets) |
-| 7 | About | "Built on a philosophy of building." | Workspace grid (4 image cards) |
-| 8 | Start | "Enough about us. Let's talk about your business." | Input + CTAs |
+| # | Section | Flow (Topic → Sentence → Visual → Support → Action) |
+|---|---------|------------------------------------------------------|
+| 0 | Hero | Introduction → "Good to have you here." → Status column → Value prop → CTAs |
+| 1 | Expectations | Expectations → "Here's what you can expect." → Principles + Philosophy cards → Note → Link |
+| 2 | Credibility | Credibility → "Different businesses. Different challenges." → Logos + Metric wall → Footnote → Link |
+| 3 | Capabilities | Capabilities → "Challenges rarely exist in isolation." → Capability map → Objective note → Link |
+| 4 | Selected Work | Selected Work → "Execution is where strategy meets reality." → Case grid → Note → Link |
+| 5 | How We Work | How We Work → "Clear journeys. Shared accountability." → Process map → Note → Link |
+| 6 | Client Experience | Client Experience → "Proof lives in conversations." → Conversation stack → Note → Link |
+| 7 | About | About → "Built on a philosophy of building." → Workspace grid → Note → Link |
+| 8 | Start | Start → "Enough about us. Let's talk about your business." → Input → Support → CTAs |
 
-### 4.3 Narration system
+### 4.3 Narrative flow system
 
-Each section (except V09) has a `.narration` container in the left split:
+Each section uses a 5-element vertical narrative flow: **Topic → Sentence → Visual → Support → Action**, connected by ↓ arrows.
 
 ```html
-<div class="narration">
-  <div class="narration-msg phase-a">
-    <span class="narration-sender">
-      <span class="narration-avatar">U</span>
-      <span class="narration-name">Univens</span>
-    </span>
-    <span class="narration-text">Heading text here.</span>
+<div class="nf-flow">
+  <div class="nf-topic phase-a">Topic</div>
+  <div class="nf-arrow phase-a">↓</div>
+  <div class="nf-sentence phase-a">One sentence message.</div>
+  <div class="nf-arrow phase-b">↓</div>
+  <div class="nf-visual phase-b">
+    <!-- Primary UI component -->
+  </div>
+  <div class="nf-arrow phase-b">↓</div>
+  <div class="nf-support phase-b">Supporting information.</div>
+  <div class="nf-arrow phase-b">↓</div>
+  <div class="nf-action phase-b">
+    <a href="#" class="btn">Action →</a>
+    <a href="#" class="btn-ot">Secondary →</a>
   </div>
 </div>
 ```
 
-- `.narration-avatar`: 18px circle, dark background, white "U"
-- `.narration-name`: 9px uppercase "UNIVENS" label
-- `.narration-text`: `rgba(17,17,17,.03)` subtle background, `border-radius: 4px 4px 4px 2px` (asymmetric, chat-like)
-- Width hugs content via `width: fit-content`
+- `.nf-flow`: flex column, `max-width: clamp(480px,52vw,720px)`, left-aligned by default
+- `.nf-flow.nf-centered`: centered alignment for closing section (V09)
+- `.nf-topic`: 9px IBM Plex Mono uppercase label for the section topic
+- `.nf-arrow`: subtle ↓ in `var(--text-disabled)` at 35% opacity
+- `.nf-sentence`: main message, `clamp(16px,1.2vw,24px)` / weight 500
+- `.nf-visual`: full-width wrapper for the primary UI component
+- `.nf-support`: explainer text, `clamp(12px,.7vw,15px)` / weight 400, max 28em
+- `.nf-action`: flex row (or column for centered) wrapping CTAs with 12px gap
+- Phase-a reveals topic + sentence; phase-b reveals visual + support + action
 
 ### 4.4 Navbar
 
@@ -377,7 +395,7 @@ Full cursor system with:
 - **No italic Inter Tight** — `<em>` must use Instrument Serif with `font-style:normal`
 - **Color system** — All colors derive from `#111` with controlled alpha; no pure grays, no `#000`/`#fff`
 - **Chapter 18 Visual Language System** — No glassmorphism, no decorative canvases, no card containers (whitespace replaces borders), no shadows, max one icon per info group, noise max 2%, approved corner radii (4px cards, 2px small elements)
-- **30-70 split layout** — 30% narration left, 70% UI right (except V00 hero at 70-30)
+- **Narrative flow layout** — Each section uses the 5-element vertical flow: Topic → ↓ → Sentence → ↓ → Visual → ↓ → Support → ↓ → Action
 - **Custom cursor** — Must be present on desktop (≥1024px), hidden on mobile (≤1023px)
 - **Phase system** — Phase-a at `lp > 0.02`, Phase-b at `lp > 0.1`, gated by `isVisible`
 - **White background** — `var(--bg): #fff`
@@ -404,8 +422,8 @@ Full cursor system with:
 
 ```
 univens/
-├── index.html    # Single-file page (~1008 lines)
-│   ├── <head>    # Fonts, inline styles (~240 lines)
+├── index.html    # Single-file page (~956 lines)
+│   ├── <head>    # Fonts, inline styles (~230 lines)
 │   ├── <body>    # Preloader, cursor, noise, nav, menu, stage, spacer, footer, script
 │   └── <script>  # Scroll engine, reveal system, cursor state machine, interactives, preloader
 ├── theme.md      # This document
@@ -422,10 +440,10 @@ univens/
 4. **`!important` on `.reveal` is intentional** — It guarantees override against competing opacity rules from transition base states.
 5. **`.section-block` selector prefix on phase rules** — Rules use `.section-block .phase-a` not `.inner .phase-a` to catch elements outside `.inner` (scroll-hint, footnotes).
 6. **Preloader must hide on `visibilitychange`** — Without this, the preloader could persist when returning to the tab via browser cache.
-7. **`width: fit-content` on narration-text** — Makes bubbles hug content width. Works with `max-width: 100%` to prevent overflow in narrow splits.
-8. **Tag mismatches break all JS** — A single unclosed `<div>` or `<span>` in the narration system can halt the entire script. Verify tag balance after edits.
-9. **The hero section uses `split-70-30` not `split-30-70`** — It's the only section where narration takes 70%.
-10. **Old `level-01` through `level-04` classes are removed** — Do not reference them. Narration text now uses `.narration-text`.
+7. **The narrative flow is 5 elements, not 3** — Each section must have exactly: Topic, Arrow, Sentence, Arrow, Visual, Arrow, Support, Arrow, Action. Miss one and the structure breaks.
+8. **Tag mismatches break all JS** — A single unclosed `<div>` or `<span>` can halt the entire script. Verify tag balance after edits.
+9. **`.nf-flow.nf-centered` is for V09 only** — The centered modifier aligns everything center. All other sections use the default left-aligned flow.
+10. **Old `level-01` through `level-04`, narration, and split classes are removed** — Do not reference them. Use `.nf-*` classes for the flow.
 
 ---
 
@@ -556,6 +574,14 @@ Append entries here at the end of each work session.
 - 700ms interval per phrase, 500ms fade out.
 - Auto-hide on `visibilitychange`/`pagehide`.
 
+### Session 17 — Narrative flow restructure (v1.3)
+- **Complete viewport redesign**: Every section restructured to `Topic → ↓ → Sentence → ↓ → Visual → ↓ → Support → ↓ → Action` vertical narrative flow. Replaces the 30-70 split + narration bubble system.
+- **New CSS**: `.nf-flow` (flex column container), `.nf-topic` (mono section label), `.nf-arrow` (↓ connector), `.nf-sentence` (main message), `.nf-visual` (component wrapper), `.nf-support` (explainer text), `.nf-action` (CTA wrapper). Added `.nf-centered` modifier for centered alignment.
+- **All 9 sections rewritten**: Hero (Introduction), Expectations, Credibility, Capabilities, Selected Work, How We Work, Client Experience, About, Start (centered) — each using the 5-element flow structure with phase-a (topic+sentence) and phase-b (visual+support+action) reveal.
+- **CSS cleanup**: Removed `.narration*`, `.split-layout*`, `.level-05`, `.principles-note`, `.capability-footnote`, `.process-footnote`, `.conv-footnote`, `.mlogos-footnote`, `.ws-footnote`, `.timeline*`, `.experience-stack`, `.invite-large`, `.invite-support`, `.status-hint`, `.timeline-footnote` classes. Removed `.vp-hero .inner{max-width:none}`. Updated `.inner` default to `min(92vw,800px)`.
+- **JS updates**: Context memory messages updated to `"Topic — Sentence"` format. `ST` array updated (last entry `'invitation'`). Menu label "Hero" → "Introduction".
+- **File size reduced**: ~1008 → ~956 lines.
+
 ### Session 16 — Workspace URL fix & conv-stack ID
 - Fixed truncated Unsplash photo IDs in V08 workspace grid (`index.html:526-529`): photo IDs were cut off at `//auto=format`, replaced with valid Unsplash IDs for Planning, Design, Code, and Team images.
 - Added `id="conv-stack"` to V07 conversation stack container (`index.html:502`) so JS finds it via `getElementById` instead of falling back to `querySelector('.conv-stack')`.
@@ -576,78 +602,78 @@ Append entries here at the end of each work session.
 |---|---|
 | **Narrative Purpose** | Welcome the visitor. Set the conversational tone. |
 | **Primary Emotion** | Curiosity, calm |
-| **Narration** | 3 messages: greeting → statement → value prop |
-| **UI** | Status cycling column + CTAs |
-| **Split** | 70-30 (narration leads) |
+| **Flow** | Introduction → "Good to have you here." → Status column → Value prop → CTAs |
+| **Phase-a** | Topic + Sentence |
+| **Phase-b** | Visual + Support + Action |
 
 ### V01 — Expectations
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Set expectations for the relationship. |
 | **Primary Emotion** | Recognition |
-| **Narration** | "Here's what you can expect." |
-| **UI** | 3 principles + philosophy cards |
-| **Split** | 30-70 |
+| **Flow** | Expectations → "Here's what you can expect." → Principles + Philosophy → Note → Link |
+| **Phase-a** | Topic + Sentence |
+| **Phase-b** | Visual + Support + Action |
 
 ### V02 — Credibility
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Build trust through evidence, not claims. |
 | **Primary Emotion** | Trust |
-| **Narration** | "Different businesses. Different challenges." |
-| **UI** | Logo wall + Metric wall |
-| **Split** | 30-70 |
+| **Flow** | Credibility → "Different businesses. Different challenges." → Logos + Metrics → Footnote → Link |
+| **Phase-a** | Topic + Sentence |
+| **Phase-b** | Visual + Support + Action |
 
 ### V03 — Capabilities
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Show breadth of capability without a service menu. |
 | **Primary Emotion** | Understanding |
-| **Narration** | "Challenges rarely exist in isolation." |
-| **UI** | Capability map |
-| **Split** | 30-70 |
+| **Flow** | Capabilities → "Challenges rarely exist in isolation." → Capability map → Note → Link |
+| **Phase-a** | Topic + Sentence |
+| **Phase-b** | Visual + Support + Action |
 
 ### V04 — Selected Work
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Prove execution through real examples. |
 | **Primary Emotion** | Confidence |
-| **Narration** | "Execution is where strategy meets reality." |
-| **UI** | Case study grid |
-| **Split** | 30-70 |
+| **Flow** | Selected Work → "Execution is where strategy meets reality." → Case grid → Note → Link |
+| **Phase-a** | Topic + Sentence |
+| **Phase-b** | Visual + Support + Action |
 
 ### V05 — How We Work
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Explain the process transparently. |
 | **Primary Emotion** | Clarity |
-| **Narration** | "Clear journeys. Shared accountability." |
-| **UI** | Process map |
-| **Split** | 30-70 |
+| **Flow** | How We Work → "Clear journeys. Shared accountability." → Process map → Note → Link |
+| **Phase-a** | Topic + Sentence |
+| **Phase-b** | Visual + Support + Action |
 
 ### V06 — Client Experience
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Replace testimonials with authentic evidence. |
 | **Primary Emotion** | Connection |
-| **Narration** | "Proof lives in conversations." |
-| **UI** | Conversation snippets |
-| **Split** | 30-70 |
+| **Flow** | Client Experience → "Proof lives in conversations." → Conversation stack → Note → Link |
+| **Phase-a** | Topic + Sentence |
+| **Phase-b** | Visual + Support + Action |
 
 ### V07 — About
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Humanize Univens — show the philosophy. |
 | **Primary Emotion** | Warmth |
-| **Narration** | "Built on a philosophy of building." |
-| **UI** | Workspace grid |
-| **Split** | 30-70 |
+| **Flow** | About → "Built on a philosophy of building." → Workspace grid → Note → Link |
+| **Phase-a** | Topic + Sentence |
+| **Phase-b** | Visual + Support + Action |
 
 ### V08 — Start
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Start the relationship, not capture a lead. |
 | **Primary Emotion** | Readiness |
-| **Narration** | "Enough about us. Let's talk about your business." |
-| **UI** | Input + CTAs |
-| **Split** | Centered full-width |
+| **Flow** | Start → "Enough about us. Let's talk about your business." → Input → Support → CTAs |
+| **Phase-a** | Topic + Sentence |
+| **Phase-b** | Visual + Support + Action |
