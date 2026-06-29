@@ -279,20 +279,15 @@ font-family: 'IBM Plex Mono', monospace (weights 400, 500)
 
 ### 4.3 Narrative flow system
 
-Each section uses a 5-element vertical narrative flow: **Topic → Sentence → Visual → Support → Action**, connected by ↓ arrows.
+Each section uses a clean vertical flow: **Message → Visual → Action**, with no connectors, labels, or support text.
 
 ```html
 <div class="nf-flow">
-  <div class="nf-topic phase-a">Topic</div>
-  <div class="nf-arrow phase-a">↓</div>
-  <div class="nf-sentence phase-a">One sentence message.</div>
-  <div class="nf-arrow phase-b">↓</div>
+  <div class="nf-line phase-a">Core message line 1.</div>
+  <div class="nf-line phase-a">Core message line 2.</div>
   <div class="nf-visual phase-b">
     <!-- Primary UI component -->
   </div>
-  <div class="nf-arrow phase-b">↓</div>
-  <div class="nf-support phase-b">Supporting information.</div>
-  <div class="nf-arrow phase-b">↓</div>
   <div class="nf-action phase-b">
     <a href="#" class="btn">Action →</a>
     <a href="#" class="btn-ot">Secondary →</a>
@@ -302,13 +297,11 @@ Each section uses a 5-element vertical narrative flow: **Topic → Sentence → 
 
 - `.nf-flow`: flex column, `max-width: clamp(480px,52vw,720px)`, left-aligned by default
 - `.nf-flow.nf-centered`: centered alignment for closing section (V09)
-- `.nf-topic`: 9px IBM Plex Mono uppercase label for the section topic
-- `.nf-arrow`: subtle ↓ in `var(--text-disabled)` at 35% opacity
-- `.nf-sentence`: main message, `clamp(16px,1.2vw,24px)` / weight 500
+- `.nf-line`: single message line, `clamp(17px,1.3vw,26px)` / weight 500. Multiple `.nf-line` elements stack with `4px` gap
 - `.nf-visual`: full-width wrapper for the primary UI component
-- `.nf-support`: explainer text, `clamp(12px,.7vw,15px)` / weight 400, max 28em
 - `.nf-action`: flex row (or column for centered) wrapping CTAs with 12px gap
-- Phase-a reveals topic + sentence; phase-b reveals visual + support + action
+- Phase-a reveals the message lines; phase-b reveals visual + action
+- No arrows, no topic labels, no footnotes — just the essential message
 
 ### 4.4 Navbar
 
@@ -422,7 +415,7 @@ Full cursor system with:
 
 ```
 univens/
-├── index.html    # Single-file page (~956 lines)
+├── index.html    # Single-file page (~889 lines)
 │   ├── <head>    # Fonts, inline styles (~230 lines)
 │   ├── <body>    # Preloader, cursor, noise, nav, menu, stage, spacer, footer, script
 │   └── <script>  # Scroll engine, reveal system, cursor state machine, interactives, preloader
@@ -438,7 +431,7 @@ univens/
 2. **The `.reveal` class is toggled every frame** — It's not additive like the old `active` class. `updateSlides()` runs on every rAF tick and sets/removes `.reveal` based on current scroll position.
 3. **Phase thresholds are gated by `isVisible`** — Without `isVisible = o > 0.01`, `.reveal` would be removed too early as section opacity crosses zero.
 4. **`!important` on `.reveal` is intentional** — It guarantees override against competing opacity rules from transition base states.
-5. **`.section-block` selector prefix on phase rules** — Rules use `.section-block .phase-a` not `.inner .phase-a` to catch elements outside `.inner` (scroll-hint, footnotes).
+5. **`.section-block` selector prefix on phase rules** — Rules use `.section-block .phase-a` not `.inner .phase-a` to catch elements outside `.inner`.
 6. **Preloader must hide on `visibilitychange`** — Without this, the preloader could persist when returning to the tab via browser cache.
 7. **The narrative flow is 5 elements, not 3** — Each section must have exactly: Topic, Arrow, Sentence, Arrow, Visual, Arrow, Support, Arrow, Action. Miss one and the structure breaks.
 8. **Tag mismatches break all JS** — A single unclosed `<div>` or `<span>` can halt the entire script. Verify tag balance after edits.
@@ -574,6 +567,15 @@ Append entries here at the end of each work session.
 - 700ms interval per phrase, 500ms fade out.
 - Auto-hide on `visibilitychange`/`pagehide`.
 
+### Session 18 — Clean narrative flow: no arrows, no topics, minimal copy
+- **Removed all arrows (↓)**: Every `.nf-arrow` element stripped from all 9 sections. The sequential flow is implied by vertical stacking alone.
+- **Removed all topic labels**: `.nf-topic` (Introduction, Expectations, Credibility, etc.) removed. Sections speak for themselves.
+- **Removed all support text**: `.nf-support` removed. No footnotes, no explainers — just the essential message.
+- **Copy simplified to 1–2 punchy lines per section**: Hero → "Good to have you here. / Let's start with what we do." | Expectations → "What brings businesses to Univens? / Execution." | Credibility → "Different businesses. / Different challenges." | Others trimmed to single lines.
+- **New `.nf-line` class**: Single class for all message lines (replaces `.nf-topic`, `.nf-sentence`, `.nf-support`). Stacked via `.nf-line + .nf-line` margin.
+- **CSS cleanup**: Removed `.nf-topic`, `.nf-arrow`, `.nf-sentence`, `.nf-support`, `.scroll-hint`, `.status-arrow`, `@keyframes hintIn`. Cursor scroll-hint logic removed. File reduced 956 → 889 lines.
+- **Context memory refreshed**: Messages updated to match new copy. No section prefix — just the raw line.
+
 ### Session 17 — Narrative flow restructure (v1.3)
 - **Complete viewport redesign**: Every section restructured to `Topic → ↓ → Sentence → ↓ → Visual → ↓ → Support → ↓ → Action` vertical narrative flow. Replaces the 30-70 split + narration bubble system.
 - **New CSS**: `.nf-flow` (flex column container), `.nf-topic` (mono section label), `.nf-arrow` (↓ connector), `.nf-sentence` (main message), `.nf-visual` (component wrapper), `.nf-support` (explainer text), `.nf-action` (CTA wrapper). Added `.nf-centered` modifier for centered alignment.
@@ -602,78 +604,96 @@ Append entries here at the end of each work session.
 |---|---|
 | **Narrative Purpose** | Welcome the visitor. Set the conversational tone. |
 | **Primary Emotion** | Curiosity, calm |
-| **Flow** | Introduction → "Good to have you here." → Status column → Value prop → CTAs |
-| **Phase-a** | Topic + Sentence |
-| **Phase-b** | Visual + Support + Action |
+| **Message** | "Good to have you here." + "Let's start with what we do." |
+| **Visual** | Status cycling column |
+| **Action** | Start the Conversation → / See How We Think |
+| **Phase-a** | Message |
+| **Phase-b** | Visual + Action |
 
 ### V01 — Expectations
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Set expectations for the relationship. |
 | **Primary Emotion** | Recognition |
-| **Flow** | Expectations → "Here's what you can expect." → Principles + Philosophy → Note → Link |
-| **Phase-a** | Topic + Sentence |
-| **Phase-b** | Visual + Support + Action |
+| **Message** | "What brings businesses to Univens?" + "Execution." |
+| **Visual** | Principles + Philosophy cards |
+| **Action** | Learn More → |
+| **Phase-a** | Message |
+| **Phase-b** | Visual + Action |
 
 ### V02 — Credibility
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Build trust through evidence, not claims. |
 | **Primary Emotion** | Trust |
-| **Flow** | Credibility → "Different businesses. Different challenges." → Logos + Metrics → Footnote → Link |
-| **Phase-a** | Topic + Sentence |
-| **Phase-b** | Visual + Support + Action |
+| **Message** | "Different businesses." + "Different challenges." |
+| **Visual** | Logo wall + Metric wall |
+| **Action** | See Our Work → |
+| **Phase-a** | Message |
+| **Phase-b** | Visual + Action |
 
 ### V03 — Capabilities
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Show breadth of capability without a service menu. |
 | **Primary Emotion** | Understanding |
-| **Flow** | Capabilities → "Challenges rarely exist in isolation." → Capability map → Note → Link |
-| **Phase-a** | Topic + Sentence |
-| **Phase-b** | Visual + Support + Action |
+| **Message** | "Challenges rarely exist in isolation." |
+| **Visual** | Capability map |
+| **Action** | Explore Services → |
+| **Phase-a** | Message |
+| **Phase-b** | Visual + Action |
 
 ### V04 — Selected Work
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Prove execution through real examples. |
 | **Primary Emotion** | Confidence |
-| **Flow** | Selected Work → "Execution is where strategy meets reality." → Case grid → Note → Link |
-| **Phase-a** | Topic + Sentence |
-| **Phase-b** | Visual + Support + Action |
+| **Message** | "Execution is where strategy meets reality." |
+| **Visual** | Case study grid |
+| **Action** | View All Work → |
+| **Phase-a** | Message |
+| **Phase-b** | Visual + Action |
 
 ### V05 — How We Work
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Explain the process transparently. |
 | **Primary Emotion** | Clarity |
-| **Flow** | How We Work → "Clear journeys. Shared accountability." → Process map → Note → Link |
-| **Phase-a** | Topic + Sentence |
-| **Phase-b** | Visual + Support + Action |
+| **Message** | "Clear journeys." + "Shared accountability." |
+| **Visual** | Process map |
+| **Action** | Start Your Project → |
+| **Phase-a** | Message |
+| **Phase-b** | Visual + Action |
 
 ### V06 — Client Experience
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Replace testimonials with authentic evidence. |
 | **Primary Emotion** | Connection |
-| **Flow** | Client Experience → "Proof lives in conversations." → Conversation stack → Note → Link |
-| **Phase-a** | Topic + Sentence |
-| **Phase-b** | Visual + Support + Action |
+| **Message** | "Proof lives in conversations." |
+| **Visual** | Conversation snippets |
+| **Action** | Let's Talk → |
+| **Phase-a** | Message |
+| **Phase-b** | Visual + Action |
 
 ### V07 — About
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Humanize Univens — show the philosophy. |
 | **Primary Emotion** | Warmth |
-| **Flow** | About → "Built on a philosophy of building." → Workspace grid → Note → Link |
-| **Phase-a** | Topic + Sentence |
-| **Phase-b** | Visual + Support + Action |
+| **Message** | "Built on a philosophy of building." |
+| **Visual** | Workspace grid |
+| **Action** | Meet Us → |
+| **Phase-a** | Message |
+| **Phase-b** | Visual + Action |
 
 ### V08 — Start
 | Field | Value |
 |---|---|
 | **Narrative Purpose** | Start the relationship, not capture a lead. |
 | **Primary Emotion** | Readiness |
-| **Flow** | Start → "Enough about us. Let's talk about your business." → Input → Support → CTAs |
-| **Phase-a** | Topic + Sentence |
-| **Phase-b** | Visual + Support + Action |
+| **Message** | "Enough about us." + "Let's talk about your business." |
+| **Visual** | Input field |
+| **Action** | Start the Conversation → / Explore Our Work |
+| **Phase-a** | Message |
+| **Phase-b** | Visual + Action |
