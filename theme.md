@@ -406,3 +406,323 @@ Append entries here at the end of each work session. Each entry should capture w
 - Added smooth body entrance animation
 - Redesigned buttons: primary (outlined → fills black on hover), secondary (text-only with → arrow reveal)
 - Created this `theme.md` document with full system design, constraints, and context
+
+### Session 5 — Bidirectional text transitions
+- Fixed text transitions only firing on first scroll (not on scroll-back)
+- Changed `.active` class from additive (`if(o>.5)sec.classList.add('active')`) to toggled (`sec.classList.toggle('active', o>.5)`) so sections lose `.active` when they fade out
+- Switched paragraph stagger from CSS `@keyframes fpi` animation to CSS `transition` on `opacity` — animations only fire once even with class removal/re-add, transitions replay bidirectionally
+- Added `opacity:0; transition:opacity 1s ...` to base `.section-block .inner > p:not(.lede)` rule so paragraphs fade back out when `.active` is removed
+- Removed `@keyframes fpi` (no longer needed)
+- `.ch` word-reveal transitions already used CSS transitions, so they work bidirectionally with no change
+
+### Session 6 — Heading-first content reveal
+- Shifted all body paragraph `transition-delay` by +2s (first paragraph starts at 2s, stagger continues at 2.25s, 2.5s, etc.) so `.lede` word-reveal completes before body content appears
+- Added `opacity:0; transition: opacity 1s ...` with delayed `.active` reveal to content blocks: `.quote` (2s), `.lr` buttons (2.5s), `.wrk-list` (2.5s), `.srv-grid` (2.5s), `.stat-row` (2.5s)
+- Result: on section enter, `.lede` words blur in immediately; after ~2s, body paragraphs and content blocks fade in with staggered timing
+
+### Session 7 — Enhanced progress indicator with section context
+- Replaced the 1px × 120px subtle progress bar with a more prominent 2px × `min(55vh,360px)` bar
+- Added 10 section markers (small dots) at each section's progress position along the bar
+- Active section marker enlarges and darkens (4px→6px, opacity .08→.28)
+- Added section number label (`01`–`10`) positioned to the left of the bar, updates on scroll
+- Kept the traveling dot for precise position feedback
+- All elements hidden on mobile (≤768px) as before
+
+### Session 8 — Cursor redesign (gap-ring system)
+- Completely redesigned the cursor around the concept of "completion" — the ring has a gap that gradually closes as you scroll through the narrative, fully closes when ready to click, and breathes when idle
+- **Dot** (6px, dark gray `rgba(0,0,0,.55)`) — tracks exact mouse position, the "point of execution"
+- **Gap-ring** (38px) — rendered via `conic-gradient` + `mask` for a dynamic arc
+- **Scroll-responsive gap**: gap starts at 30° at the top of the page and linearly decreases to 0° as `scrollProgress` reaches 1 (the CTA section). The cursor's incompletion mirrors the narrative's incompletion — as the story resolves, the ring completes
+- **Hover completion**: gap closes to 0° over interactive elements (`a`, `.btn`, `.cta`, `button`, `.wrk-item`, `.srv-card`) — visual metaphor for "ready to execute"
+- **Gap lerp**: current gap smoothly interpolates toward target gap at 0.08 factor, avoiding visual jumps between states
+- **Idle breath**: after 4s without mouse movement, the ring subtly pulses (±1.5% scale at 0.0015 frequency) — feels like a quiet breath, makes the page feel alive and listening
+- **Click snap**: ring contracts to 0.7× on mousedown, snaps back on release
+- **Default cursor hidden** via `body { cursor: none }` on desktop (≥1024px)
+- Hidden entirely on touch/tablet (≤1023px)
+- Removed `mix-blend-mode: difference` — uses explicit dark colors on white background for reliable cross-browser rendering
+- **Critical fix**: `scrollProgress` was declared with `let` after the cursor code, causing a Temporal Dead Zone `ReferenceError` on first `cur()` call — halted all JS execution including `updateSlides()`, making all content invisible. Moved `scrollProgress` before the cursor code to resolve.
+
+### Session 9 — Value-driven cursor features
+- Added **contextual whisper labels**: when hovering over interactive elements, a tiny label fades in 24px to the right of the ring, communicating what the action means: "Book a Call" on primary CTA, "Our process →" on secondary CTA, work item titles on `.wrk-item`, service names on `.srv-card`, link text on `<a>` tags. This makes the cursor feel like a silent assistant that explains each action.
+- Added **element-type-aware ring response**: primary buttons/CTA contract ring to 0.78× (decisive), secondary buttons to 0.85× (exploratory), work items/service cards to 0.9× (inviting to explore), regular links to 0.82×. Each conveys the nature of the interaction.
+- Added **section-type resonance**: ring subtly adjusts scale based on narrative arc — problem sections (0.97×, slight tension), solution sections (1.02×, openness), closing/CTA sections (1.03×, warmth). Orientates the user within the story.
+- Added **scroll velocity fade**: when scrolling fast (>0.8 px/ms, within 120ms of last scroll event), the ring fades proportionally down to 0.15 opacity. Rewards slow, deliberate reading — aligns with the "conversation, not skimming" ethos.
+- Improved hover detection: tracks the actual hovered element (`hoverEl`) instead of a boolean, enabling type-specific behavior. Added `.btn-ot` to the selector list.
+- Label positioned via CSS `left`/`top` (no transform conflict) with `transition: opacity .25s` for smooth fade in/out.
+
+### Session 10 — Cursor state machine (magnetic, stretch, breath, blink, particles)
+- Full cursor JS restructured as a **state machine** — each frame evaluates independent state inputs (magnetism, curiosity, transition, breathing, blink, scroll velocity) to compose a final ring transform. No external state library; all logic in the `cur()` animation loop.
+- Added **magnetic attraction**: interactive element positions cached via `getBoundingClientRect()` on load/scroll/resize. When cursor is within 60px of the nearest element (and not already hovering it), a gravitational pull (up to 16px offset) tugs the ring toward the element's center. Creates a "gravity well" feeling — the ring leans toward interactive targets before the user reaches them.
+- Added **curiosity stretch**: ring deforms along the velocity vector when mouse moves fast (>2px/frame). Stretch factor up to 1.08× in movement direction, 0.92× perpendicular. Smoothly lerped via `curSx`/`curSy` (0.12 factor) to avoid jitter. Makes the cursor feel wind-resistant, like it has mass.
+- Replaced simple idle sine wave with **continuous organic breathing** (`Math.sin(now*0.0013)*0.006`, ~4.8s cycle) — subtle constant oscillation rather than starting/stopping after idle.
+- Added **resting blink**: after 20s of inactivity, the dot's scale Y pinches toward 0 whenever `Math.sin(now*0.004)` crests above 0.85. Simulates a slow, restful eye blink. The dot "closes" momentarily, reinforcing the cursor as a living presence.
+- Added **section transition pulse**: tracks `lastSec` on every frame; when `scrollProgress*9` rounds to a new section index, triggers a 300ms pulse (1.08× scale up-down via `Math.sin(transAge*PI)`). Brief "breath" when crossing narrative boundaries — feels like the cursor is aware of the story structure.
+- Added **text reading mode**: ring gap opens +8° when hovering over a `<p>` element (`hoverEl.tagName==='P'`). Subtle invitation to read; reverts immediately on exit.
+- Added **scroll particle trail**: on every scroll event while the cursor is active, spawns a 3px dot at the ring's position. Particles fade to 0 over 500ms, then are recycled into a pool (`pPool`) to avoid DOM thrash. Only visible during scroll — suggests movement through space.
+- All features compose multiplicatively in the `s` scale variable — no conflicts between breathing, transitioning, element-type response, section resonance, or click-snap.
+
+---
+
+## 13. Cinematic Experience System
+
+### Philosophy
+
+Visitors should never feel like they are scrolling through a website. They should feel like they are progressing through a story.
+
+- Every viewport is a scene.
+- Every scroll advances the narrative.
+- Every interaction builds anticipation.
+- Every transition has intention.
+
+### The Five Rules
+
+1. **Never reveal everything immediately** — Every viewport creates one unanswered question. Curiosity is stronger than explanation.
+2. **One hero per viewport** — One sentence. One interaction. One visual. Never compete for attention.
+3. **Motion follows emotion** — Animation is never decorative. Everything moves because the story needs it.
+4. **Silence is part of communication** — Whitespace creates anticipation. Let the visitor breathe.
+5. **Reward curiosity** — Every scroll reveals something new. Never make scrolling feel repetitive.
+
+### Cinematic Timeline (3 Acts)
+
+**Act 1** — Arrival → Curiosity → Recognition  
+**Act 2** — Trust → Understanding → Connection  
+**Act 3** — Confidence → Relationship → Action
+
+Emotional intensity gradually increases. Never peaks too early.
+
+### Scene Composition
+
+Every viewport has four layers:
+- **Foreground**: Conversation (the copy)
+- **Middle Layer**: Visual Explanation (illustration, canvas, logos, cards)
+- **Background**: Ambient Motion (canvas blobs, noise, glow)
+- **Cursor**: Interaction Layer (brand state machine)
+
+### Camera Principles
+
+The website behaves like a camera — it chooses where visitors should look:
+- Typography scales
+- Illustration stays
+- Whitespace changes
+- Perspective shifts
+
+Only one visual element should dominate each viewport. Never two heroes.
+
+### 4-Phase Scroll Choreography
+
+Each viewport has four phases based on local scroll progress (0–1):
+
+| Phase | Progress | What happens |
+|---|---|---|
+| **Arrival** | 0.00–0.12 | Everything still, no distractions, visitor observes |
+| **Discovery** | 0.12–0.45 | Primary content appears — one idea, nothing else |
+| **Development** | 0.45–0.78 | Interaction begins, illustration evolves, cursor reacts |
+| **Transition** | 0.78–1.00 | Current scene slowly exits, next scene begins entering |
+
+Scenes overlap — the visitor should never experience an empty transition.
+
+### Layers within each viewport
+
+Content is assigned to layers: `.phase-a` (Discovery), `.phase-b` (Development). Layer visibility is controlled by `data-phase` attribute set by the scroll engine based on local progress. CSS transitions handle the animation.
+
+### Emotional Color Mood
+
+| Section | Mood |
+|---|---|
+| Welcome | Neutral |
+| Recognition | Slight warmth |
+| Trust | Bright whites |
+| Understanding | Cool greys |
+| Connection | Soft accent colours |
+| Action | Highest contrast |
+
+### Cinematic Timing
+
+| Purpose | Duration |
+|---|---|
+| Simple reveals | 250ms |
+| Reading transitions | 450ms |
+| Scene transitions | 800ms |
+| Major reveals | 1200ms |
+| Moments of reflection | 1500ms |
+
+### Scroll Velocity Adaptation
+
+- **Slow scroll** (<0.2 px/ms): Reveal details, allow animations to complete, encourage exploration
+- **Fast scroll** (>0.5 px/ms): Skip layer phase delays, reveal all layers immediately, preserve flow
+
+The interface adapts to the visitor's pace.
+
+### Scene Exit
+
+Every scene leaves something behind — a breadcrumb, a phrase, a selected choice, a visual motif. The website remembers. The visitor feels continuity.
+
+---
+
+## 14. Director's Briefs
+
+### V1 — The First Impression
+| Field | Value |
+|---|---|
+| **Narrative Purpose** | Make the visitor stop. Not by shouting — by understanding them. |
+| **Primary Emotion** | Curiosity, calm |
+| **Visual Metaphor** | Empty stage, curtain about to rise |
+| **Camera Behavior** | Locked, very slow zoom into whitespace |
+| **Pacing** | Slow, contemplative |
+| **Sound Analogy** | Whisper — the room is quiet, someone is about to speak |
+| **Exit Feeling** | Intrigued — "What is this?" |
+
+### V2 — The Moment of Engagement
+| Field | Value |
+|---|---|
+| **Narrative Purpose** | Involve the visitor. Make them participate, not just read. |
+| **Primary Emotion** | Curiosity → Recognition |
+| **Visual Metaphor** | Crossroads, three paths diverging |
+| **Camera Behavior** | Track — gentle push toward the choices |
+| **Pacing** | Contemplative, patient |
+| **Sound Analogy** | Soft heartbeat — anticipation |
+| **Exit Feeling** | Heard — "They're asking me, not telling me." |
+
+### V3 — The Problem Recognized
+| Field | Value |
+|---|---|
+| **Narrative Purpose** | Show understanding. Describe the problem without saying "we understand." |
+| **Primary Emotion** | Recognition |
+| **Visual Metaphor** | Constellation connecting — isolated nodes finding each other |
+| **Camera Behavior** | Parallax drift — camera pulls back as nodes connect |
+| **Pacing** | Slow, meditative |
+| **Sound Analogy** | Quiet realization — the moment pieces click together |
+| **Exit Feeling** | Understood — "That's exactly how it feels." |
+
+### V4 — The Proof
+| Field | Value |
+|---|---|
+| **Narrative Purpose** | Build credibility without talking about ourselves. |
+| **Primary Emotion** | Trust |
+| **Visual Metaphor** | Trophy wall — logos as evidence |
+| **Camera Behavior** | Pan across — slow horizontal reveal |
+| **Pacing** | Steady, confident |
+| **Sound Analogy** | Distant applause — quiet acknowledgment |
+| **Exit Feeling** | Assured — "They've done this before." |
+
+### V5 — The Offer
+| Field | Value |
+|---|---|
+| **Narrative Purpose** | Explain what Univens actually is — center the visitor's business. |
+| **Primary Emotion** | Understanding |
+| **Visual Metaphor** | Solar system — the visitor's business at the center |
+| **Camera Behavior** | Orbit — pull focus to center, then float around |
+| **Pacing** | Calm, open |
+| **Sound Analogy** | Clear tone — a bell ringing |
+| **Exit Feeling** | Clarity — "I see what they do." |
+
+### V6 — The Path
+| Field | Value |
+|---|---|
+| **Narrative Purpose** | Explain the process without paragraphs — make it feel inevitable. |
+| **Primary Emotion** | Trust |
+| **Visual Metaphor** | Bridge being built — step by step |
+| **Camera Behavior** | Track forward — moving through each phase |
+| **Pacing** | Energetic, forward-moving |
+| **Sound Analogy** | Steady rhythm — footsteps on a path |
+| **Exit Feeling** | Confident — "That makes sense." |
+
+### V7 — The Evidence
+| Field | Value |
+|---|---|
+| **Narrative Purpose** | Replace testimonials with authentic evidence. |
+| **Primary Emotion** | Connection |
+| **Visual Metaphor** | Open scrapbook — real conversations, real moments |
+| **Camera Behavior** | Zoom into details — close on each snippet |
+| **Pacing** | Slow, intimate |
+| **Sound Analogy** | Warm conversation — a friend telling a story |
+| **Exit Feeling** | Connected — "This feels real." |
+
+### V8 — The Truth
+| Field | Value |
+|---|---|
+| **Narrative Purpose** | Handle the pricing objection before it's asked. |
+| **Primary Emotion** | Relief |
+| **Visual Metaphor** | Two doors — wrong way vs right way |
+| **Camera Behavior** | Locked, direct — no distractions |
+| **Pacing** | Quick, honest, direct |
+| **Sound Analogy** | Deep breath — honesty creates safety |
+| **Exit Feeling** | Relieved — "They get it." |
+
+### V9 — The Vision
+| Field | Value |
+|---|---|
+| **Narrative Purpose** | Sell peace of mind, not services. |
+| **Primary Emotion** | Anticipation, hope |
+| **Visual Metaphor** | Empty room — silence creates impact |
+| **Camera Behavior** | Slow zoom in — the words fill the frame |
+| **Pacing** | Very slow, reflective |
+| **Sound Analogy** | Silence — then a single piano note |
+| **Exit Feeling** | Hopeful — "I want that." |
+
+### V10 — The People
+| Field | Value |
+|---|---|
+| **Narrative Purpose** | Humanize Univens — show the people behind the work. |
+| **Primary Emotion** | Trust, warmth |
+| **Visual Metaphor** | Open notebook — sketches, ideas, coffee |
+| **Camera Behavior** | Static, warm — like sitting across a table |
+| **Pacing** | Calm, grounding |
+| **Sound Analogy** | Quiet corner of a coffee shop |
+| **Exit Feeling** | Welcomed — "I'd like to meet them." |
+
+### V11 — The Invitation
+| Field | Value |
+|---|---|
+| **Narrative Purpose** | Start the relationship, not capture a lead. |
+| **Primary Emotion** | Anticipation, readiness |
+| **Visual Metaphor** | Open door — threshold to cross |
+| **Camera Behavior** | Push in — moving through the door |
+| **Pacing** | Building — emotional crescendo |
+| **Sound Analogy** | Orchestra build — final movement |
+| **Exit Feeling** | Ready — "I know what to do next." |
+
+---
+
+## 15. Session Log
+
+Append entries here at the end of each work session. Each entry should capture what was done and why.
+
+### Session 11 — Full blueprint implementation & cinematic experience system
+- **Complete rewrite**: Replaced all 10 sections with 11 viewports matching the Experience Blueprint. New copy, new interactions, new emotional arc.
+- **Architecture scaled**: spacer from 600vh→660vh, progress indicator to 11 markers, scroll engine for 11 sections.
+- **Hero word-fade**: Replaced character-by-character typing with word-by-word fade-in (opacity + translateY). Added ambient radial glow that follows mouse, cursor read-along (ring gap closes on each new line), punchline pulse (ring scales to 1.08× on "Neither are we."), and smart scroll hint (leans toward cursor in bottom 25% viewport).
+- **V2 Choices**: Three floating options with hover lift and click response. Click changes copy dynamically.
+- **V3 Nodes**: Dedicated canvas with 12 drifting nodes. Connection lines form as scroll progress increases (threshold tied to `vpProgress[2]`).
+- **V4 Logo wall**: 8 brand names (Disney, Amazon, Nickelodeon, Viacom18, Sony, Netflix, Spotify, Stripe) with staggered scroll reveal via `reveal` class.
+- **V5 Gravity**: "Your Business" at center with 8 floating service words (Website, Brand, Automation, AI, etc.) using spring-physics mouse attraction. Words drift back to orbital positions via damped springs.
+- **V6 Timeline**: 5-step horizontal journey (You talk → We understand → We simplify → We execute → We improve). Hover reveals step descriptions.
+- **V7 Conversation snippets**: 5 styled cards (Slack, Zoom, WhatsApp, email, planning notes) with blurred sensitive content and platform-colored left borders.
+- **V8 Wrong Hire flow**: Arrow-connected comparison (Wrong Hire → Delays → Rework → Start with us instead).
+- **V9 Poster typography**: 8 staggered poster lines with per-line transition delays (0.5s–2.5s). "Imagine not chasing updates anymore..."
+- **V10 Workspace scene**: 6 positioned items (Notebook, Laptop, Coffee, Sketches, Project notes, Wireframes) with rotation.
+- **V11 Input field**: Centered input with placeholder cycling (3 messages at 4s intervals). Enter-to-send note + CTA button.
+- **Cursor upgrades**: Spring physics (SK=0.12, SD=0.68) replaces lerp. Arrow morph on links/buttons via clip-path triangle. Pencil morph on input focus (2×18px bar + dot shrink). Fixed `setRingMorph` class management to preserve `.ring` base class.
+- **Body visibility**: Removed `opacity:0` body fade animation. Reduced typing delay from 500ms→200ms. Added zero-width space for initial div height.
+- **Error isolation**: All IIFEs and main script sections wrapped in `try{...}catch(e){}` — a crash in one viewport can't break scroll engine or other viewports.
+- **Nodes canvas**: Removed accumulating `devicePixelRatio` scale in `resizeNC()` that caused drawing to go off-screen.
+- **Added Cinematic Experience System** to docs (Section 13): 5 rules, 3-act timeline, 4-phase scroll choreography, scene composition layers, camera principles, emotional color mapping, cinematic timing table, scroll velocity adaptation guidelines.
+- **Added Director's Briefs** (Section 14): Scene title, narrative purpose, primary emotion, visual metaphor, camera behavior, pacing, sound analogy, exit feeling for all 11 viewports.
+- **Implemented 4-phase scroll choreography**: Per-section `data-phase` attribute (arrival → discovery → dev → full) set by scroll engine based on local progress. Phase thresholds skip to 'full' during fast scroll (>0.5 px/ms) for velocity adaptation.
+- **Added phase layers to CSS**: `.phase-a` (appears at discovery, 12% local progress) and `.phase-b` (appears at development, 45% local progress) with 0.7s cubic-bezier transitions. Both visible in 'dev' and 'full' phases.
+- **Assigned phase classes** to all 11 viewports: primary content (lede, main interaction) gets `.phase-a`, secondary content (visuals, grids, supporting elements) gets `.phase-b`. Ambient elements (glow, canvas) remain unphased for always-on background.
+- **Direct smooth snap scroll**: Replaced continuous scroll with section-by-section snapping. Wheel event triggers `snapTo()` which animates `window.scrollTo` with easeInOutQuad over 550ms. Scroll events during animation are prevented via `snapLock` flag. Keyboard navigation added (ArrowDown/Up, PageDown/Up, Space).
+- **Spacer resized** from 660vh to 1100vh (11 × 100vh) — each section gets a full viewport of scroll distance for clean snap positioning.
+- **Scroll throttling** refactored from `tick` flag to `schedU()`/`pendingUpdate` pattern for cleaner integration with snap animation.
+- During snap, `updateSlides()` is called directly in the rAF loop for frame-accurate section opacity transitions. The existing crossfade window (~18% fade-in, ~13% fade-out overlap) creates a brief, smooth blend during the 550ms snap.
+- **Modern typographic refinements**: Introduced CSS custom properties for a warm, sophisticated palette (`--text`, `--text-soft`, `--text-muted`, `--border`, `--accent`, `--glow`, `--warm`). Replaced `#fff` background with warm off-white `#faf8f5`. Refined type scale: body at `16–19px` / line-height 1.75, lede at `21–28px` / weight 300, hero at `30–54px` / weight 300 with tighter letter-spacing. Added `.sub` utility for small uppercase labels. Updated poster lines to weight 300 with 1.25 line-height. Refined all component colors (choices, logos, gravity words, timeline, conv cards, hire steps, workspace items, input, buttons, footer) to use palette variables. Updated all `.inner` transitions to `cubic-bezier(.22,1,.36,1)`. Added smooth `opacity .7s` transition on section blocks. Reduced noise opacity to 1.5%. Changed selection color to warm accent. Refined CTA button with hover pill background.
+- **Implemented Chapter 15 Typography Motion Language**: Full rewrite of text animation system to match conversational, calm, intentional motion philosophy.
+  - **Hero sentence reveal**: Replaced word-by-word animation with sentence-by-sentence reveal. First two sentences use Type 01 (typing), third uses Type 02 (Soft Fade Up), timing follows the chapter's table.
+  - **Soft Fade Up (Type 02)**: New `.s-reveal` / `.s-inner` CSS system: opacity 0→1, translateY 12px→0, 700ms, spring easing.
+  - **Context Memory**: `#ctx-memory` fixed element showing previous section's key sentence for conversational continuity.
+  - **Removed `.hero-word`** CSS (no longer used) and all word-by-word animation logic.
+- **Conversation V3 rewrite (Session 13)**: Full 11-viewport content replacement with new copy, interactions, and flow matching the new conversation blueprint.
+- **Chapter 02 Design Concept alignment (Session 13)**:
+  - **Removed ALL borders/containers** from interactive elements — choices, philosophy words, credibility logos, and execution loop steps are now pure text with color transitions only. Whitespace replaces containers.
+  - **Nodes canvas made persistent**: Moved from inside V3 section to `position:fixed` background layer. Connection threshold scales with `scrollProgress * 1.5` — everything begins disconnected, scrolling creates order.
+  - **Section type map updated**: `ST` array now maps to new V3 section names. Context memory messages, cache targets, and all JS references updated.
