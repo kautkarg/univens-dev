@@ -1,20 +1,20 @@
-# Univens — Theme & System Design
+# Univens — Experience System Design
 
-> **How to use this doc:** Read it cover-to-cover before making any changes. It defines the immutable core of this project — the architecture, visual identity, scroll mechanics, and content structure. If you need to modify something, first check whether it's marked as a constraint or a preference. Constraints must be preserved. Preferences can be adjusted if the spirit of the theme is maintained.
+> **How to use this doc:** Read it cover-to-cover before making any changes. It defines the architecture, design language, and decision history of the Univens Experience System. This is NOT a homepage spec — it is the system from which all Univens pages (Home, About, Services, Work, Insights, Contact) will eventually be composed. Every principle here should be evaluated against: *"Would every page inherit this behavior?"* If yes, it's a system decision. If no, it's a page decision and does not belong here.
 
 ---
 
 ## 1. Project Identity
 
-**Univens** is an execution partner for growing businesses. The website speaks 1:1 to the visitor — a direct, honest conversation. No marketing fluff. No "full-service agency" language. The brand is confident, premium, and minimal.
+**Univens** is an execution partner for growing businesses. The Univens Experience System defines how the brand communicates, behaves, and feels — independent of any specific page. This document codifies the visual, motion, interaction, typography, color, layout, host, cursor, scroll, and information philosophy that every Univens page will inherit.
 
 ### Core principles
-- **Conversational** — The visitor is being spoken to directly, not marketed at. Copy is direct, honest, CEO-voice.
-- **Interactive storytelling** — Each section pairs a bold headline with a hands-on UI component (clickable framework, filterable grid, orbital map, project file tabs, expandable timeline). The visitor learns by exploring.
+- **Conversational** — The visitor is being spoken to directly, not marketed at. This is a system-level tone decision, not a homepage decision.
+- **System-first** — Every behavior must be evaluable against: *"Should every page inherit this?"* If no, it belongs in page-level composition, not the system.
 - **Premium minimal** — Warm off-white background (`#F8F9FA`), dark gray text (`#1A1C1E`), generous whitespace, dramatic typography contrast (Geist headings vs Inter Tight body)
 - **Scroll-driven narrative** — Stage stays fixed; opacity (smoothstep easing) and `.reveal` class handle transitions
 - **Cinematic presentation** — Letterbox bars, multi-stop vignette overlay, film grain noise, spring-physics cursor with morphing states, host intelligence FSM in bottom-right
-- **Asymmetric layout rhythm** — Sections alternate between centered, right-aligned, and left-aligned to break predictable column patterns
+- **Curiosity system** — The experience should invite exploration, not demand attention. Phase-based reveals, host intelligence, and cursor engagement arc reward the visitor for spending time.
 
 ---
 
@@ -52,8 +52,8 @@ The site went through a fundamental restructuring:
 | Decision | Rationale |
 |----------|-----------|
 | **JS `.reveal` class over CSS phase system** | CSS phase system required specific scroll thresholds and suffered from specificity battles. New system toggles `.reveal` class every frame with gated thresholds. |
-| **Premium visual polish (Session 19)** | User requested Apple-level whitespace, dramatic typography contrast, asymmetric layout, and cinematic depth. Added: expanded padding, bigger Geist headlines + softer Inter Tight body, `.inner-right`/`.inner-left` alignment, enhanced backdrop-blur, vignette, box-shadows on hover. |
-| **Asymmetric layout over centered** | Breaking the predictable centered column creates visual rhythm. Sections alternate: centered → right → centered → left → centered → right → centered → centered. |
+| **Premium visual polish (Session 19)** | User requested Apple-level whitespace, dramatic typography contrast, and cinematic depth. Added: expanded padding, bigger Geist headlines + softer Inter Tight body, enhanced backdrop-blur, vignette, box-shadows on hover. |
+| **Asymmetric layout (deprecated Session 22)** | Originally introduced in Session 19 (`.inner-right`/`.inner-left`). Removed in Session 22 — all sections now use centered `.inner`. Asymmetry was a page-level decision, not a system-level one. |
 | **Geist + Inter Tight + Fragment Mono** | Geist for headings (modern geometric presence), Inter Tight for body (readable warmth), Fragment Mono for labels (more character than IBM Plex Mono). |
 | **Cinematic presentation** | Letterbox bars (gradient), multi-stop vignette, film grain noise (2%, multiply), spring-physics cursor with morphing — create a premium film-like atmosphere without being decorative. |
 | **Host FSM system** | Bottom-right contextual messenger with 8 states (ARRIVED→WELCOME→HOVERING→EXPLORING→RETURNING→DEEP_DIVE→READY_TO_LEAVE). Replaces traditional tooltips/onboarding with an intelligent guide. |
@@ -67,6 +67,43 @@ The site went through a fundamental restructuring:
 - Headlines are bold, declarative statements. Body subheads explain briefly. Interactive UI components carry the detailed storytelling.
 - The tone is confident, direct, and premium — like a CEO in a boardroom conversation
 - 8 sections with a natural narrative arc: what → how → proof → can they → show me → what's it like → who → let's talk
+
+---
+
+## 1b. Phase Architecture
+
+The Univens project follows a phased approach. Each phase has a distinct objective and output. Earlier phases define the inputs for later phases.
+
+### Phase 01 — Brand Core (Complete)
+**Output:** Personality, Positioning, Communication, Mental Model
+- Who Univens is and how it speaks
+- The conversational 1:1 CEO voice established
+- Completed before system design began
+
+### Phase 02 — Experience System (Current)
+**Output:** Visual language, motion language, interaction language, typography language, color language, layout language, host behavior, cursor behavior, scroll behavior, information hierarchy, component philosophy
+- Everything that is *independent of pages*
+- This document and `index.html` (Theme Prototype) are the outputs
+- **Current question:** *"Does this strengthen the Univens Experience System?"*
+
+### Phase 03 — Design System (Next)
+**Output:** Grid, typography specs, color tokens, component library, iconography, image guidelines, cursor specs, motion tokens
+- Translate philosophy into precise specifications
+- Token-based, build-step-ready
+
+### Phase 04 — Theme Prototype (In Progress)
+**Output:** `index.html` — a single sandbox page
+- No concern about sitemap, navigation, or SEO
+- Purpose: Validate *"Does this feel like Univens?"*
+- Every UI in the sandbox expresses a system behavior, not a page layout
+
+### Phase 05 — Information Architecture (Future)
+**Output:** Sitemap, page hierarchy, navigation model, content structure
+- Only after the experience is validated
+
+### Phase 06 — Content Architecture (Future)
+**Output:** Homepage, About, Services, Work, Insights, Contact
+- Apply the system consistently across all pages
 
 ---
 
@@ -460,11 +497,12 @@ Finite state machine with states: ARRIVED → WELCOME → HOVERING / EXPLORING /
 
 ```
 univens/
-├── index.html    # Single-file page (~1268 lines)
+├── index.html    # Theme Prototype / Experience Sandbox (~1268 lines)
 │   ├── <head>    # Fonts (Google Fonts: Geist, Inter Tight, Instrument Serif, Fragment Mono), inline CSS (~268 lines)
-│   ├── <body>    # Preloader, cursor, noise, letterbox, vignette, host, nav, menu, stage (8 sections), spacer, footer
+│   ├── <body>    # Preloader, cursor, noise, letterbox, vignette, host, nav, menu, stage (8 sandbox sections), spacer, footer
 │   └── <script>  # Cursor state machine (spring physics), host FSM, 8 interactive components, scroll engine, snap, preloader
-├── theme.md      # This document (~770 lines)
+├── theme.md      # This document — Experience System Design (~810 lines)
+│                  # Purpose: codify the system, not spec the homepage
 ```
 
 ---
@@ -622,6 +660,13 @@ Append entries here at the end of each work session.
 - **Target caching**: `cacheTargets()` rebuilds interactive element positions on scroll/resize for accurate magnetic pull calculations
 - **Section tracking**: `lastSec` state tracks section changes to reset engagement and idle hint state
 
+### Session 23 — Experience System reframe (strategic reset)
+- **Fundamental reframe**: User identified that we were optimizing for "launching a website" when we should be optimizing for "creating a design language." The project was reset to focus on the **Univens Experience System** — the visual, motion, interaction, typography, color, layout, host, cursor, scroll, and information philosophy from which all pages will be composed.
+- **Phase Architecture defined**: 6 phases — Brand Core (complete) → Experience System (current) → Design System (next) → Theme Prototype (in progress) → Information Architecture (future) → Content Architecture (future).
+- **New evaluation question**: Every idea is now evaluated against: *"If this becomes part of the Univens design language, should every page inherit this behavior?"* If yes, it's a system decision. If no, it's a page decision.
+- **`index.html` redefined**: No longer "homepage" — now **Theme Prototype** / **Experience Sandbox**. Its purpose is to validate system behaviors, not page content, CTAs, SEO, or navigation.
+- **theme.md updated**: Project Identity reframed as Experience System Design. Phase Architecture added as section 1b. Asymmetric layout marked as deprecated. File structure comments updated. Session 23 appended.
+
 ### Session 22 — Brand website transformation: from product UI to cinematic chapters
 - **Major critique addressed**: User identified the site still felt like "product UI" / "software dashboard" rather than a "premium brand website". Initiated section-by-section visual transformation to make each feel like a distinct cinematic chapter.
 - **Hero (V00)**: Restructured HTML — network SVG moved to absolute-positioned background (z-index:-1, centered, 60s orbit rotation, opacity:0.1). Giant typography with atmospheric radial gradient. Clean centered layout with minimal CTA at 50% opacity.
@@ -685,7 +730,11 @@ Append entries here at the end of each work session.
 
 ---
 
-## 13. Director's Briefs
+## 13. Director's Briefs (Sandbox Sections)
+
+These sections exist in the Theme Prototype (`index.html`) to validate system behaviors — scroll, cursor, host, phase reveals, interaction patterns. They are **not** page content. The specific copy and visuals here serve the system, not the final information architecture.
+
+The natural narrative arc across the 8 sandbox sections: what → how → proof → can they → show me → what's it like → who → let's talk.
 
 ### V00 — Hero (What exactly is Univens?)
 | Field | Value |
